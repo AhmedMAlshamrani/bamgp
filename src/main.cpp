@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 
-const int FPS = 30;
+const int FPS = 120;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -25,11 +25,11 @@ TTF_Font *gameFont = nullptr;
 
 float inputDirectionX = 0.0f;
 float inputDirectionY = 0.0f;
-float movementSpeed = 2.0f;
+float movementSpeed = 5.0f;         // 2.0f 
 
 float ballXVel = 1.0f;
 float ballYVel = 1.0f;
-float ballMovementSpeed = 10.0f;
+float ballMovementSpeed = 40.0f;    // 10.0f
 
 SDL_Rect ballRect;
 
@@ -98,7 +98,7 @@ int main(int argc, char* args[])
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
 
             // font
-            DrawText(backBuffer, "score", 50, 100, gameFont, 255u, 255u, 255u);
+            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 255u, 255u);
 
             // end draw frame
             SDL_UpdateWindowSurface(window);
