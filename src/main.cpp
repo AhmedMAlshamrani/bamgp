@@ -19,6 +19,7 @@ SDL_Surface *backGroundImage = nullptr;
 SDL_Surface *backBuffer = nullptr;
 
 Mix_Chunk *hitSound = nullptr;
+Mix_Music *backGroundMusic = nullptr;
 
 TTF_Font *gameFont = nullptr;
 
