@@ -8,6 +8,10 @@ const int FPS = 30;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
+const int PADDLE_WIDTH = 100;
+const int PADDLE_HEIGHT = 20;
+const int BALL_RADIUS = 10;
+const int BALL_SPEED = 5;
 
 SDL_Window *window = nullptr;
 SDL_Surface *sprite = nullptr;
