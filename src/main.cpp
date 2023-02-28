@@ -8,10 +8,6 @@ const int FPS = 30;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const int PADDLE_WIDTH = 100;
-const int PADDLE_HEIGHT = 20;
-const int BALL_RADIUS = 10;
-const int BALL_SPEED = 5;
 
 SDL_Window *window = nullptr;
 SDL_Surface *sprite = nullptr;
@@ -19,7 +15,6 @@ SDL_Surface *backGroundImage = nullptr;
 SDL_Surface *backBuffer = nullptr;
 
 Mix_Chunk *hitSound = nullptr;
-Mix_Music *backGroundMusic = nullptr;
 
 TTF_Font *gameFont = nullptr;
 
@@ -80,7 +75,6 @@ int main(int argc, char* args[])
     if (LoadFiles()) {
 
         //play sound
-        // Mix_PlayChanel(-1, hitSound, 0);
         Mix_PlayChannel(-1, hitSound, -1);
         while(ProgramIsRunning())
         {
@@ -268,12 +262,6 @@ void FreeFiles()
     {
         Mix_FreeChunk(hitSound);
         hitSound = nullptr;
-    }
-    
-    if (backGroundMusic != nullptr)
-    {
-        Mix_FreeMusic(backGroundMusic);
-        backGroundMusic = nullptr;
     }
 }
 
