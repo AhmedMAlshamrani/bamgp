@@ -230,13 +230,13 @@ bool LoadFiles()
 
     // load sounds
     hitSound = Mix_LoadWAV("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
-
+    // The song used is from YouTube: Luis Fonsi ‒ Despacito (Lyrics / Lyric Video) ft. Daddy Yankee
     if (hitSound == nullptr)
         return false;
 
     // load music
     backGroundMusic = Mix_LoadMUS("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
-
+    // The song used is from YouTube: Luis Fonsi ‒ Despacito (Lyrics / Lyric Video) ft. Daddy Yankee
     if(backGroundMusic == nullptr)
         return false;
 
