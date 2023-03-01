@@ -68,7 +68,7 @@ int main(int argc, char* args[])
 
     // create window
     window = SDL_CreateWindow(
-        "Black Art of Multiplatform Game Programming!",
+        "Pong!",                    // "Black Art of Multiplatform Game Programming!"
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH,
