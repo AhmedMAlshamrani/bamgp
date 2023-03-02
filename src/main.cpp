@@ -108,7 +108,7 @@ int main(int argc, char* args[])
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
 
             // font
-            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 260u, 230u);
+            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 255u, 255u);
 
             // end draw frame
             SDL_UpdateWindowSurface(window);
