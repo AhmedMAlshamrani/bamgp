@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 
-const int FPS = 30;
+const int FPS = 60;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
