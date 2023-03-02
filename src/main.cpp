@@ -4,14 +4,17 @@
 #include <iostream>
 #include <stdio.h>
 
-const int FPS = 60;
+const int FPS = 30;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int PADDLE_WIDTH = 100;
 const int PADDLE_HEIGHT = 20;
 const int BALL_RADIUS = 10;
-const int BALL_SPEED = 5;
+const int BALL_SPEED = 7;
+
+const int PADDLE_SSPEED = 10;
+const int MAX_AI_DIFFICULTY = 10;
 
 SDL_Window *window = nullptr;
 SDL_Surface *sprite = nullptr;
@@ -23,15 +26,22 @@ Mix_Music *backGroundMusic = nullptr;
 
 TTF_Font *gameFont = nullptr;
 
+float playerDirectionX = 0.0f;
+float aiDirectionX = 0.0f;
+float playerPaddleSpeed = 0.0f;
+float aiPaddleSpeed = 0.0f;
+
 float inputDirectionX = 0.0f;
 float inputDirectionY = 0.0f;
-float movementSpeed = 5.0f;         // 2.0f 
+float movementSpeed = 2.0f;
 
 float ballXVel = 1.0f;
 float ballYVel = 1.0f;
-float ballMovementSpeed = 40.0f;    // 10.0f
+float ballMovementSpeed = 10.0f;
 
 SDL_Rect ballRect;
+SDL_Rect playerPaddleRect;
+SDL_Rect aiPaddleRect;
 
 bool LoadFiles();
 void FreeFiles();
@@ -68,7 +78,7 @@ int main(int argc, char* args[])
 
     // create window
     window = SDL_CreateWindow(
-        "Pong!",                    // "Black Art of Multiplatform Game Programming!"
+        "Black Art of Multiplatform Game Programming!",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH,
@@ -98,7 +108,7 @@ int main(int argc, char* args[])
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
 
             // font
-            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 255u, 255u);
+            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 260u, 230u);
 
             // end draw frame
             SDL_UpdateWindowSurface(window);
