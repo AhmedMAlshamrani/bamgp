@@ -4,44 +4,44 @@
 #include <iostream>
 #include <stdio.h>
 
-const int FPS = 60;
+
+const int FPS = 30;
 const int FRAME_DELAY = 1000/FPS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int PADDLE_WIDTH = 100;
 const int PADDLE_HEIGHT = 20;
 const int BALL_RADIUS = 10;
-const int BALL_SPEED = 7;
+const int BALL_SPEED = 5;
 
-const int PADDLE_SSPEED = 10;
-const int MAX_AI_DIFFICULTY = 10;
 
 SDL_Window *window = nullptr;
 SDL_Surface *sprite = nullptr;
 SDL_Surface *backGroundImage = nullptr;
 SDL_Surface *backBuffer = nullptr;
+SDL_Surface *PaddleSprite = nullptr;
+
 
 Mix_Chunk *hitSound = nullptr;
 Mix_Music *backGroundMusic = nullptr;
 
+
 TTF_Font *gameFont = nullptr;
 
-float playerDirectionX = 0.0f;
-float aiDirectionX = 0.0f;
-float playerPaddleSpeed = 0.0f;
-float aiPaddleSpeed = 0.0f;
 
 float inputDirectionX = 0.0f;
 float inputDirectionY = 0.0f;
 float movementSpeed = 2.0f;
 
+
 float ballXVel = 1.0f;
 float ballYVel = 1.0f;
 float ballMovementSpeed = 10.0f;
 
+
 SDL_Rect ballRect;
-SDL_Rect playerPaddleRect;
-SDL_Rect aiPaddleRect;
+SDL_Rect PaddleRect;
+
 
 bool LoadFiles();
 void FreeFiles();
@@ -52,14 +52,39 @@ void DrawImageFrame(SDL_Surface* image, SDL_Surface* destSurface, int x, int y, 
 void DrawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, Uint8 r, Uint8 g, Uint8 b);
 bool RectsOverlap(SDL_Rect rect1, SDL_Rect rect2);
 
+
 int main(int argc, char* args[])
 {
     std::cout << "Hello World" << std::endl;
+
+    int highScore = 0;
+
 
     ballRect.x = 0;
     ballRect.y = 250;
     ballRect.w = 20;
     ballRect.h = 20;
+
+    PaddleRect.x = 0;
+    PaddleRect.y = 550;
+    PaddleRect.w = 100;
+    PaddleRect.h = 90;
+
+    if (ballRect.y >= SCREEN_HEIGHT)
+{
+    // The ball went behind the player - restart the game or update the high score
+    if (SDL_GetTicks() > highScore)
+    {
+        highScore = SDL_GetTicks();
+    }
+    
+    ballRect.x = 0;
+    ballRect.y = 250;
+    ballXVel = 1.0f;
+    ballYVel = 1.0f;
+}
+
+
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
@@ -68,26 +93,30 @@ int main(int argc, char* args[])
         return 1;
     }
 
+
     // load font
     if (TTF_Init() == -1)
         return 2;
+
 
     // load sdl mixer
     if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
         return 3;
 
+
     // create window
     window = SDL_CreateWindow(
-        "Black Art of Multiplatform Game Programming!",
+        "Pong!",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
         0);
-    
+   
     backBuffer = SDL_GetWindowSurface(window);
-    
+   
     if (LoadFiles()) {
+
 
         //play sound
         Mix_PlayChannel(-1, hitSound, -1);
@@ -98,23 +127,57 @@ int main(int argc, char* args[])
             // reset the back buffer with the back ground
             SDL_BlitSurface(backGroundImage, NULL, backBuffer, NULL);
 
+            // Keyboard events
+            SDL_Event event;
+            while (SDL_PollEvent(&event))
+            {
+                switch (event.type)
+                {
+                    case SDL_KEYDOWN:
+                        switch (event.key.keysym.sym)
+                        {
+                            case SDLK_LEFT:
+                                PaddleRect.x -= movementSpeed;
+                                break;
+                            case SDLK_RIGHT:
+                                PaddleRect.x += movementSpeed;
+                                break;
+                        }
+                        break;
+                        case SDL_QUIT:
+                        return 0;
+                }
+            }
+
+            // Paddle Boundaries
+            if (PaddleRect.x < 0) PaddleRect.x = 0;
+            if (PaddleRect.x + PADDLE_WIDTH > SCREEN_WIDTH) PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
+
+
             // draw the image
             ballRect.x = (ballRect.x + (ballRect.w/2.0f) < SCREEN_WIDTH) ? (ballRect.x + (inputDirectionX * movementSpeed)) : -(ballRect.w/2.0f) + 1;
             ballRect.x = (ballRect.x > -(ballRect.w/2.0f)) ? ballRect.x : SCREEN_WIDTH - (ballRect.w/2.0f) - 1;
 
+
             ballRect.y = (ballRect.y + (ballRect.h/2.0f) < SCREEN_HEIGHT) ? (ballRect.y + (inputDirectionY * movementSpeed)) : -(ballRect.h/2.0f) + 1;
             ballRect.y = (ballRect.y > -(ballRect.h/2.0f)) ? ballRect.y : SCREEN_HEIGHT - (ballRect.h/2.0f) - 1;
 
+
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
 
+            DrawImage(PaddleSprite, backBuffer, PaddleRect.x, PaddleRect.y);
+
+
             // font
-            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 255u, 255u);
+            DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 260u, 230u);
+
 
             // end draw frame
             SDL_UpdateWindowSurface(window);
-            
-            // find the number of milliseconds 
+           
+            // find the number of milliseconds
             int frameTime = SDL_GetTicks() - frameStart;
+
 
             // if we are rendering faster than FPS sleep the cpu
             if (frameTime < FRAME_DELAY)
@@ -122,25 +185,32 @@ int main(int argc, char* args[])
         }
     }
 
+
     FreeFiles();
+
 
     SDL_DestroyWindow(window);
     SDL_Quit();
 
+
     return 0;
 }
+
 
 SDL_Surface* LoadImage(const char* fileName)
 {
     SDL_Surface* imageLoaded = NULL;
     SDL_Surface* processedImage = NULL;
 
+
     imageLoaded = SDL_LoadBMP(fileName);
+
 
     if(imageLoaded != NULL)
     {
         processedImage = SDL_ConvertSurface(imageLoaded, backBuffer->format, 0);
         SDL_FreeSurface(imageLoaded);
+
 
         if(processedImage != NULL)
         {
@@ -149,8 +219,10 @@ SDL_Surface* LoadImage(const char* fileName)
         }
     }
 
+
     return processedImage;
 }
+
 
 bool ProgramIsRunning()
 {
@@ -158,20 +230,23 @@ bool ProgramIsRunning()
     inputDirectionX = 0.0f;
     inputDirectionY = 0.0f;
 
+
     // input buffer
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 
+
     if (keys[SDL_SCANCODE_LEFT])
         inputDirectionX = -1.0f;
-    
+   
     if (keys[SDL_SCANCODE_RIGHT])
         inputDirectionX = 1.0f;
-    
+   
     if (keys[SDL_SCANCODE_UP])
         inputDirectionY = -1.0f;
-    
+   
     if (keys[SDL_SCANCODE_DOWN])
         inputDirectionY = 1.0f;
+
 
     while (SDL_PollEvent(&event))
     {
@@ -188,9 +263,10 @@ bool ProgramIsRunning()
             float y = event.motion.y;
         }
     }
-    
+   
     return true;
 }
+
 
 void DrawImage(SDL_Surface* image, SDL_Surface* destSurface, int x, int y)
 {
@@ -198,8 +274,10 @@ void DrawImage(SDL_Surface* image, SDL_Surface* destSurface, int x, int y)
     destRect.x = x;
     destRect.y = y;
 
+
     SDL_BlitSurface( image, NULL, destSurface, &destRect);
 }
+
 
 void DrawImageFrame(SDL_Surface* image, SDL_Surface* destSurface,
                     int x, int y, int width, int height, int frame)
@@ -208,7 +286,9 @@ void DrawImageFrame(SDL_Surface* image, SDL_Surface* destSurface,
     destRect.x = x;
     destRect.y = y;
 
+
     int collumns = (*image).w/width;
+
 
     SDL_Rect sourceRect;
     sourceRect.y = (frame/collumns)*height;
@@ -216,26 +296,36 @@ void DrawImageFrame(SDL_Surface* image, SDL_Surface* destSurface,
     sourceRect.w = width;
     sourceRect.h = height;
 
+
     SDL_BlitSurface(image, &sourceRect, destSurface, &destRect);
 }
+
 
 bool LoadFiles()
 {
     // load images
     backGroundImage = LoadImage("assets/graphics/pong_background.bmp");
     sprite = LoadImage("assets/graphics/ball.bmp");
+    PaddleSprite = LoadImage("assets/graphics/spaceship.bmp");
+
 
     if(sprite == nullptr)
         return false;
 
+    if(PaddleSprite == nullptr)
+        return false;
+
+
     if(backGroundImage == nullptr)
         return false;
-    
+   
     // load font
     gameFont = TTF_OpenFont("assets/fonts/alfphabet.ttf", 30);
 
+
     if (gameFont == nullptr)
         return false;
+
 
     // load sounds
     hitSound = Mix_LoadWAV("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
@@ -243,15 +333,19 @@ bool LoadFiles()
     if (hitSound == nullptr)
         return false;
 
+
     // load music
     backGroundMusic = Mix_LoadMUS("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
     // The song used is from YouTube: Luis Fonsi ‒ Despacito (Lyrics / Lyric Video) ft. Daddy Yankee
     if(backGroundMusic == nullptr)
         return false;
 
+
     return true;
 
+
 }
+
 
 void FreeFiles()
 {
@@ -261,59 +355,79 @@ void FreeFiles()
         sprite = nullptr;
     }
 
+
     if(backGroundImage != nullptr)
     {
         SDL_FreeSurface(backGroundImage);
         backGroundImage = nullptr;
     }
 
+
     if (gameFont != nullptr)
     {
         TTF_CloseFont(gameFont);
         gameFont = nullptr;
     }
-    
+   
     if(hitSound !=nullptr)
     {
         Mix_FreeChunk(hitSound);
         hitSound = nullptr;
     }
+
+    if(PaddleSprite != nullptr)
+    {
+        SDL_FreeSurface(PaddleSprite);
+        PaddleSprite = nullptr;
+    }
 }
+
 
 void DrawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, Uint8 r, Uint8 g, Uint8 b)
 {
     SDL_Surface* renderedText = NULL;
 
+
     SDL_Color color;
+
 
     color.r = r;
     color.g = g;
     color.b = b;
 
+
     renderedText = TTF_RenderText_Solid( font, string, color );
 
+
     SDL_Rect pos;
+
 
     pos.x = x;
     pos.y = y;
 
+
     SDL_BlitSurface( renderedText, NULL, surface, &pos );
     SDL_FreeSurface(renderedText);
 }
+
 
 bool RectsOverlap(SDL_Rect rect1, SDL_Rect rect2)
 {
     if(rect1.x >= rect2.x+rect2.w)
         return false;
 
+
     if(rect1.y >= rect2.y+rect2.h)
         return false;
+
 
     if(rect2.x >= rect1.x+rect1.w)
         return false;
 
+
     if(rect2.y >= rect1.y+rect1.h)
         return false;
+
 
     return true;
 }
