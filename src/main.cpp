@@ -3,6 +3,7 @@
 #include <SDL_ttf.h>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 const int FPS = 30;
@@ -31,7 +32,7 @@ TTF_Font *gameFont = nullptr;
 
 float inputDirectionX = 0.0f;
 float inputDirectionY = 0.0f;
-float movementSpeed = 2.0f;
+float movementSpeed = 6.0f;
 
 
 float ballXVel = 1.0f;
@@ -59,7 +60,7 @@ int main(int argc, char* args[])
 
     int highScore = 0;
 
-
+    bool GameStarted = false;// added GameStarted
     ballRect.x = 0;
     ballRect.y = 250;
     ballRect.w = 20;
@@ -127,6 +128,40 @@ int main(int argc, char* args[])
             // reset the back buffer with the back ground
             SDL_BlitSurface(backGroundImage, NULL, backBuffer, NULL);
 
+            const Uint8* keystate = SDL_GetKeyboardState(NULL);
+                if (keystate[SDL_SCANCODE_SPACE] && !GameStarted)
+    {
+        GameStarted = true;
+
+        ballXVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
+        ballYVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
+    }
+
+        // updated ball position
+        ballRect.x += ballXVel * ballMovementSpeed;
+        ballRect.y += ballYVel * ballMovementSpeed;
+
+        // check for collision within boundaries
+        if (ballRect.x < 0 || ballRect.x + ballRect.w > SCREEN_WIDTH)
+        {
+            ballXVel = -ballXVel;
+        }
+        if (ballRect.y < 0)
+        {
+            ballYVel = -ballYVel;
+        }
+        if (ballRect.y + ballRect.h > SCREEN_HEIGHT)
+        {
+            //Ball go behind player
+            if (SDL_GetTicks() > highScore)
+            {
+                highScore = SDL_GetTicks();
+            }
+        }
+
+        
+
+
             // Keyboard events
             SDL_Event event;
             while (SDL_PollEvent(&event))
@@ -150,8 +185,14 @@ int main(int argc, char* args[])
             }
 
             // Paddle Boundaries
-            if (PaddleRect.x < 0) PaddleRect.x = 0;
-            if (PaddleRect.x + PADDLE_WIDTH > SCREEN_WIDTH) PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
+            if (PaddleRect.x < 0)
+            {
+                PaddleRect.x = 0;
+            }
+            else if (PaddleRect.x + PADDLE_WIDTH > SCREEN_WIDTH)
+            {
+                PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
+            }
 
 
             // draw the image
@@ -161,12 +202,12 @@ int main(int argc, char* args[])
 
             ballRect.y = (ballRect.y + (ballRect.h/2.0f) < SCREEN_HEIGHT) ? (ballRect.y + (inputDirectionY * movementSpeed)) : -(ballRect.h/2.0f) + 1;
             ballRect.y = (ballRect.y > -(ballRect.h/2.0f)) ? ballRect.y : SCREEN_HEIGHT - (ballRect.h/2.0f) - 1;
+            
 
-
+            // draw ball
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
 
             DrawImage(PaddleSprite, backBuffer, PaddleRect.x, PaddleRect.y);
-
 
             // font
             DrawText(backBuffer, "score", 10, 10, gameFont, 255u, 260u, 230u);
@@ -234,8 +275,7 @@ bool ProgramIsRunning()
     // input buffer
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-
-    if (keys[SDL_SCANCODE_LEFT])
+   /* if (keys[SDL_SCANCODE_LEFT])
         inputDirectionX = -1.0f;
    
     if (keys[SDL_SCANCODE_RIGHT])
@@ -245,7 +285,7 @@ bool ProgramIsRunning()
         inputDirectionY = -1.0f;
    
     if (keys[SDL_SCANCODE_DOWN])
-        inputDirectionY = 1.0f;
+        inputDirectionY = 1.0f;*/
 
 
     while (SDL_PollEvent(&event))
