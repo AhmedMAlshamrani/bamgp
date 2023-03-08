@@ -109,10 +109,10 @@ int main(int argc, char *args[])
 
     if (LoadFiles())
     {
-        // REmove after you add bounds
+        // Remove after you add bounds
         ballXVel = 0.0f;
         ballYVel = 1.0f;
-        ////////////////////////////
+        ////////////////////////////remove after you add bounds
 
         // play sound
         Mix_PlayChannel(-1, hitSound, -1);
@@ -126,7 +126,7 @@ int main(int argc, char *args[])
             const Uint8 *keystate = SDL_GetKeyboardState(NULL);
             if (keystate[SDL_SCANCODE_SPACE] && !GameStarted)
             {
-                GameStarted = true;
+                GameStarted = true; //
 
                 ballXVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
                 ballYVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
