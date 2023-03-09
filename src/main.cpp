@@ -34,8 +34,8 @@ float movementSpeed = 6.0f;
 float paddleVolacity = 0.0f;
 float paddleSpeed = 10.0f;
 
-float ballXVel = 1.0f;
-float ballYVel = 1.0f;
+float ballXVel = 0.0f;
+float ballYVel = 0.0f;
 float ballMovementSpeed = 10.0f;
 
 SDL_Rect ballRect;
@@ -67,20 +67,6 @@ int main(int argc, char *args[])
     PaddleRect.w = 100;
     PaddleRect.h = 90;
 
-    if (ballRect.y >= SCREEN_HEIGHT)
-    {
-        // The ball went behind the player - restart the game or update the high score
-        if (SDL_GetTicks() > highScore)
-        {
-            highScore = SDL_GetTicks();
-        }
-
-        ballRect.x = 0;
-        ballRect.y = 250;
-        ballXVel = 1.0f;
-        ballYVel = 1.0f;
-    }
-
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
         std::cout << "SDL failed to init!" << std::endl;
@@ -109,10 +95,6 @@ int main(int argc, char *args[])
 
     if (LoadFiles())
     {
-        // Remove after you add bounds
-        ballXVel = 0.0f;
-        ballYVel = 1.0f;
-        ////////////////////////////remove after you add bounds
 
         // play sound
         Mix_PlayChannel(-1, hitSound, -1);
@@ -132,8 +114,9 @@ int main(int argc, char *args[])
                 ballYVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
             }
 
-            // ball hit paddle 
-            if (RectsOverlap(PaddleRect, ballRect)) {
+            // ball hit paddle
+            if (RectsOverlap(PaddleRect, ballRect))
+            {
                 ballYVel = -1.0f;
             }
 
@@ -166,18 +149,35 @@ int main(int argc, char *args[])
             {
                 PaddleRect.x = 0;
             }
-            
+
             if (PaddleRect.x + PADDLE_WIDTH > SCREEN_WIDTH)
             {
                 PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
             }
 
-            // draw the image
-            ballRect.x = (ballRect.x + (ballRect.w / 2.0f) < SCREEN_WIDTH) ? (ballRect.x + (inputDirectionX * movementSpeed)) : -(ballRect.w / 2.0f) + 1;
+            //when hit the A key set AI bool true, if the AI bool true set the AI paddle x = ball X 
+            // when game reset set the AI to fales
+
+            /*ballRect.x = (ballRect.x + (ballRect.w / 2.0f) < SCREEN_WIDTH) ? (ballRect.x + (inputDirectionX * movementSpeed)) : -(ballRect.w / 2.0f) + 1;
             ballRect.x = (ballRect.x > -(ballRect.w / 2.0f)) ? ballRect.x : SCREEN_WIDTH - (ballRect.w / 2.0f) - 1;
 
             ballRect.y = (ballRect.y + (ballRect.h / 2.0f) < SCREEN_HEIGHT) ? (ballRect.y + (inputDirectionY * movementSpeed)) : -(ballRect.h / 2.0f) + 1;
-            ballRect.y = (ballRect.y > -(ballRect.h / 2.0f)) ? ballRect.y : SCREEN_HEIGHT - (ballRect.h / 2.0f) - 1;
+            ballRect.y = (ballRect.y > -(ballRect.h / 2.0f)) ? ballRect.y : SCREEN_HEIGHT - (ballRect.h / 2.0f) - 1;*/
+
+            if (ballRect.y >= SCREEN_HEIGHT)
+            {
+                // The ball went behind the player - restart the game or update the high score
+                if (score > highScore)
+                {
+                    highScore = score;
+                }
+
+                ballRect.x = 0;
+                ballRect.y = 250;
+                ballXVel = 0.0f;
+                ballYVel = 0.0f;
+                GameStarted = false;
+            }
 
             // draw ball
             DrawImage(sprite, backBuffer, ballRect.x, ballRect.y);
@@ -238,21 +238,20 @@ bool ProgramIsRunning()
     inputDirectionY = 0.0f;
     paddleVolacity = 0.0f;
 
-
     // input buffer
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-     if (keys[SDL_SCANCODE_LEFT])
-         paddleVolacity = -1.0f;
+    if (keys[SDL_SCANCODE_LEFT])
+        paddleVolacity = -1.0f;
 
-     if (keys[SDL_SCANCODE_RIGHT])
-         paddleVolacity = 1.0f;
+    if (keys[SDL_SCANCODE_RIGHT])
+        paddleVolacity = 1.0f;
 
-     /*if (keys[SDL_SCANCODE_UP])
-         inputDirectionY = -1.0f;
+    /*if (keys[SDL_SCANCODE_UP])
+        inputDirectionY = -1.0f;
 
-     if (keys[SDL_SCANCODE_DOWN])
-         inputDirectionY = 1.0f;*/
+    if (keys[SDL_SCANCODE_DOWN])
+        inputDirectionY = 1.0f;*/
 
     while (SDL_PollEvent(&event))
     {
