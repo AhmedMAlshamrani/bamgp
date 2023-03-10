@@ -123,7 +123,8 @@ int main(int argc, char *args[])
             // updated ball position
             ballRect.x += ballXVel * ballMovementSpeed;
             ballRect.y += ballYVel * ballMovementSpeed;
-
+            //high score
+            
             // check for collision within boundaries
             if (ballRect.x < 0 || ballRect.x + ballRect.w > SCREEN_WIDTH)
             {
@@ -155,8 +156,41 @@ int main(int argc, char *args[])
                 PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
             }
 
-            //when hit the A key set AI bool true, if the AI bool true set the AI paddle x = ball X 
-            // when game reset set the AI to fales
+            // when hit the A key set AI bool true, if the AI bool true set the AI paddle x = ball X
+            //  when game reset set the AI to fales
+            bool AIEnabled = true;
+
+            // handle events
+            if (keystate[SDL_SCANCODE_A])
+            {
+                AIEnabled = true;
+            }
+
+            // update AI paddle position
+            if (AIEnabled)
+            {
+                float ballCenter = ballRect.x + (ballRect.w / 2.0f);
+                float paddleCenter = PaddleRect.x + (PaddleRect.w / 2.0f);
+                float delta = ballCenter - paddleCenter;
+                if (delta > 0)
+                {
+                    PaddleRect.x += paddleSpeed;
+                }
+                else if (delta < 0)
+                {
+                    PaddleRect.x -= paddleSpeed;
+                }
+            }
+
+            // check for PaddleBoundaries
+            if (PaddleRect.x < 0)
+            {
+                PaddleRect.x = 0;
+            }
+            if (PaddleRect.x + PADDLE_WIDTH > SCREEN_WIDTH)
+            {
+                PaddleRect.x = SCREEN_WIDTH - PADDLE_WIDTH;
+            }
 
             /*ballRect.x = (ballRect.x + (ballRect.w / 2.0f) < SCREEN_WIDTH) ? (ballRect.x + (inputDirectionX * movementSpeed)) : -(ballRect.w / 2.0f) + 1;
             ballRect.x = (ballRect.x > -(ballRect.w / 2.0f)) ? ballRect.x : SCREEN_WIDTH - (ballRect.w / 2.0f) - 1;
