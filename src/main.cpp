@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 const int FPS = 30;
 const int FRAME_DELAY = 1000 / FPS;
@@ -95,6 +96,10 @@ int main(int argc, char *args[])
 
     if (LoadFiles())
     {
+        // REmove after you add bounds
+        ballXVel = 0.0f;
+        ballYVel = 1.0f;
+        ////////////////////////////
 
         // play sound
         Mix_PlayChannel(-1, hitSound, -1);
@@ -108,7 +113,7 @@ int main(int argc, char *args[])
             const Uint8 *keystate = SDL_GetKeyboardState(NULL);
             if (keystate[SDL_SCANCODE_SPACE] && !GameStarted)
             {
-                GameStarted = true; //
+                GameStarted = true;
 
                 ballXVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
                 ballYVel = (rand() % 2 == 0) ? -1.0f : 1.0f;
@@ -157,7 +162,7 @@ int main(int argc, char *args[])
             }
 
             // when hit the A key set AI bool true, if the AI bool true set the AI paddle x = ball X
-            //  when game reset set the AI to fales
+            //  when game reset set the AI to false
             bool AIEnabled = true;
 
             // handle events
@@ -211,6 +216,7 @@ int main(int argc, char *args[])
                 ballXVel = 0.0f;
                 ballYVel = 0.0f;
                 GameStarted = false;
+                score = 0;
             }
 
             // draw ball
@@ -220,14 +226,20 @@ int main(int argc, char *args[])
 
             // font
             std::string message = "score: " + std::to_string(score);
+            std::string message2 = "highscore: " + std::to_string(highScore);
             DrawText(backBuffer, message.c_str(), 10, 10, gameFont, 255u, 255u, 230u);
+            DrawText(backBuffer, message2.c_str(), 400, 10, gameFont, 250u, 240u, 220u);
 
             // end draw frame
             SDL_UpdateWindowSurface(window);
 
             // find the number of milliseconds
             int frameTime = SDL_GetTicks() - frameStart;
-            score += frameStart;
+
+            if (GameStarted)
+            {
+                score += frameStart;
+            }
 
             // if we are rendering faster than FPS sleep the cpu
             if (frameTime < FRAME_DELAY)
