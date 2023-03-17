@@ -370,13 +370,13 @@ bool LoadFiles()
         return false;
 
     // load sounds
-    hitSound = Mix_LoadWAV("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
+    hitSound = Mix_LoadWAV("assets/sounds/Luis_Fonsi_Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
     // The song used is from YouTube: Luis Fonsi ‒ Despacito (Lyrics / Lyric Video) ft. Daddy Yankee
     if (hitSound == nullptr)
         return false;
 
     // load music
-    backGroundMusic = Mix_LoadMUS("assets/sounds/Luis Fonsi ‒ Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
+    backGroundMusic = Mix_LoadMUS("assets/sounds/Luis_Fonsi_Despacito (Lyrics _ Lyric Video) ft. Daddy Yankee.wav");
     // The song used is from YouTube: Luis Fonsi ‒ Despacito (Lyrics / Lyric Video) ft. Daddy Yankee
     if (backGroundMusic == nullptr)
         return false;
